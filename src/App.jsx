@@ -529,6 +529,7 @@ export default function SMSQuiz() {
   const [sent, setSent] = useState(false);
   const [status, setStatus] = useState("idle");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [currentWinnerIndex, setCurrentWinnerIndex] = useState(0);
 
   const [selectedMonth, setSelectedMonth] = useState("april");
 
@@ -784,72 +785,120 @@ export default function SMSQuiz() {
       {/* ── CHECK ── */}
       <section id="check" className="py-14 md:py-20 px-[5%] text-center">
         <p className="text-[0.72rem] font-semibold tracking-[0.08em] uppercase text-[#0071e3] mb-2.5">
-          Личный кабинет
+          Победители месяца
         </p>
         <h2
           className="font-bold tracking-[-0.03em] leading-[1.08] mb-3"
           style={{ fontSize: "clamp(1.8rem,4.5vw,3rem)" }}
         >
-          Ваши баллы
+          Топ-3 победителей
         </h2>
-        <p className="text-[0.95rem] text-[#6e6e73] max-w-[460px] mx-auto mb-10 leading-[1.6] font-light">
-          Введите номер и мгновенно узнайте результат и ближайший приз.
+        <p className="text-[0.95rem] text-[#6e6e73] max-w-[600px] mx-auto mb-10 leading-[1.6] font-light">
+          Награды за наибольшее количество баллов, накопленных в этом месяце.
         </p>
-        <div className="max-w-[540px] mx-auto bg-[#f5f5f7] rounded-[20px] p-5 md:p-9 text-left">
-          <p className="text-[0.8rem] font-medium text-[#6e6e73] mb-2">
-            Номер телефона
-          </p>
-          <div className="flex">
-            <div className="bg-white border border-black/[0.12] border-r-0 rounded-l-[10px] px-3 md:px-3.5 py-3 text-[0.85rem] md:text-[0.9rem] font-medium text-[#6e6e73] shrink-0">
-              +992
+
+        {/* Desktop: 3 карточки рядом */}
+        <div className="hidden md:grid md:grid-cols-3 gap-6 max-w-[1100px] mx-auto">
+          {WINNERS.map((winner, idx) => (
+            <div
+              key={idx}
+              className={`rounded-[20px] p-6 text-center transition-all duration-300 ${
+                winner.dark
+                  ? "bg-[#1d1d1f] text-white"
+                  : "bg-[#f5f5f7] text-[#1d1d1f]"
+              }`}
+            >
+              <div className="text-5xl mb-4">{winner.medal}</div>
+              <div className="w-full h-[200px] bg-gradient-to-br from-[#0071e3]/20 to-[#34aadc]/20 rounded-[12px] mb-4 flex items-center justify-center overflow-hidden">
+                <div className="text-6xl">📱</div>
+              </div>
+              <p className={`text-sm font-semibold mb-2 ${winner.dark ? "text-white/60" : "text-[#6e6e73]"}`}>
+                Номер телефона
+              </p>
+              <p className={`text-lg font-bold mb-3 ${winner.dark ? "text-white" : "text-[#1d1d1f]"}`}>
+                {winner.phone}
+              </p>
+              <p className={`text-[0.9rem] font-semibold mb-3 ${winner.dark ? "text-[#0a84ff]" : "text-[#0071e3]"}`}>
+                {winner.pts}
+              </p>
+              <p className={`text-[0.85rem] font-medium ${winner.dark ? "text-white/70" : "text-[#6e6e73]"}`}>
+                {winner.prize}
+              </p>
             </div>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") handleCheck();
-              }}
-              placeholder="90 123 45 67"
-              maxLength={12}
-              className="flex-1 min-w-0 border border-black/[0.12] rounded-r-[10px] px-3 md:px-3.5 py-3 text-[0.85rem] md:text-[0.9rem] font-medium bg-white outline-none focus:border-[#0071e3] focus:shadow-[0_0_0_3px_rgba(0,113,227,0.12)] placeholder:text-black/[0.22] transition-all duration-200"
-              style={{ fontFamily: "inherit" }}
-            />
+          ))}
+        </div>
+
+        {/* Mobile: Слайдер */}
+        <div className="md:hidden">
+          <div className="max-w-[500px] mx-auto">
+            {/* Карточка */}
+            <div className="anim-pop rounded-[20px] p-6 bg-[#f5f5f7] text-center">
+              <div className="text-5xl mb-4">{WINNERS[currentWinnerIndex].medal}</div>
+              <div className="w-full h-[220px] bg-gradient-to-br from-[#0071e3]/20 to-[#34aadc]/20 rounded-[12px] mb-4 flex items-center justify-center overflow-hidden">
+                <div className="text-6xl">📱</div>
+              </div>
+              <p className="text-sm font-semibold text-[#6e6e73] mb-2">
+                Номер телефона
+              </p>
+              <p className="text-lg font-bold text-[#1d1d1f] mb-3">
+                {WINNERS[currentWinnerIndex].phone}
+              </p>
+              <p className="text-[0.9rem] font-semibold text-[#0071e3] mb-3">
+                {WINNERS[currentWinnerIndex].pts}
+              </p>
+              <p className="text-[0.85rem] font-medium text-[#6e6e73]">
+                {WINNERS[currentWinnerIndex].prize}
+              </p>
+            </div>
+
+            {/* Навигация слайдера */}
+            <div className="flex items-center justify-between mt-6">
+              <button
+                onClick={() =>
+                  setCurrentWinnerIndex((prev) =>
+                    prev === 0 ? WINNERS.length - 1 : prev - 1
+                  )
+                }
+                className="w-10 h-10 rounded-full bg-[#f5f5f7] border border-black/[0.12] flex items-center justify-center cursor-pointer hover:bg-[#e8e8eb] transition-colors"
+                style={{ fontFamily: "inherit" }}
+              >
+                ←
+              </button>
+
+              {/* Индикаторы точек */}
+              <div className="flex gap-2">
+                {WINNERS.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentWinnerIndex(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      idx === currentWinnerIndex
+                        ? "bg-[#0071e3] w-6"
+                        : "bg-black/[0.12]"
+                    }`}
+                    style={{ fontFamily: "inherit" }}
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={() =>
+                  setCurrentWinnerIndex((prev) =>
+                    prev === WINNERS.length - 1 ? 0 : prev + 1
+                  )
+                }
+                className="w-10 h-10 rounded-full bg-[#f5f5f7] border border-black/[0.12] flex items-center justify-center cursor-pointer hover:bg-[#e8e8eb] transition-colors"
+                style={{ fontFamily: "inherit" }}
+              >
+                →
+              </button>
+            </div>
+
+            {/* Текст позиции */}
+            <p className="text-center text-sm text-[#6e6e73] mt-4">
+              {currentWinnerIndex + 1} из {WINNERS.length}
+            </p>
           </div>
-          <button
-            onClick={handleCheck}
-            className="mt-3 w-full bg-[#0071e3] hover:bg-[#0077ed] hover:scale-[1.02] text-white rounded-full py-[13px] px-6 text-base font-semibold cursor-pointer transition-all duration-200 border-none"
-            style={{ fontFamily: "inherit" }}
-          >
-            Проверить →
-          </button>
-          {result && (
-            <div className="anim-pop mt-3.5 bg-white rounded-xl p-5 border border-black/[0.08]">
-              <p className="text-[2.4rem] md:text-[2.8rem] font-bold tracking-[-0.04em] leading-none">
-                {result.pts.toLocaleString("ru")}
-              </p>
-              <p className="text-[0.76rem] text-[#86868b] mt-1 mb-3.5">
-                баллов в этом месяце
-              </p>
-              <div className="h-1 bg-[#f5f5f7] rounded-full overflow-hidden mb-1.5">
-                <div
-                  className="rf-bar h-full rounded-full"
-                  style={{
-                    width: `${fillWidth}%`,
-                    background: "linear-gradient(90deg,#0071e3,#34aadc)",
-                  }}
-                />
-              </div>
-              <div className="flex justify-between text-[0.68rem] md:text-[0.7rem] text-[#86868b] mb-2.5">
-                <span>0</span>
-                <span>{result.pct}%</span>
-                <span>1 800 (iPhone)</span>
-              </div>
-              <p className="text-[0.88rem] font-semibold text-[#0071e3]">
-                {result.status}
-              </p>
-            </div>
-          )}
         </div>
       </section>
 
