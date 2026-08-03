@@ -1157,7 +1157,7 @@ export default function SMSQuiz() {
         </div>
         <div className="mt-8 md:mt-10">
           <a
-            href="/Rules.pdf"
+            href="/Регламент Мавчи Васеъ.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-[#0071e3] hover:bg-[#0077ed] active:bg-[#006edb] text-white text-[0.88rem] font-medium px-7 py-3 rounded-full transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)] hover:-translate-y-0.5"
