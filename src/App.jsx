@@ -1155,12 +1155,28 @@ export default function SMSQuiz() {
             </div>
           ))}
         </div>
-        <div className="mt-8 md:mt-10">
+        <div className="mt-8 md:mt-10 flex flex-col md:flex-row gap-10 justify-center items-center">
           <a
-            href="/Регламент Мавчи Васеъ.pdf"
+            href="/Rules-BM.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-[#0071e3] hover:bg-[#0077ed] active:bg-[#006edb] text-white text-[0.88rem] font-medium px-7 py-3 rounded-full transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)] hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#ca8a04] text-white text-[0.88rem] font-medium px-7 py-3 rounded-full transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)] hover:-translate-y-0.5"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <path
+                d="M2.5 3.5H12.5M2.5 7.5H12.5M2.5 11.5H8.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+            Регламент
+          </a>
+          <a
+            href="/Rules-MG.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-[#22c55e] hover:bg-[#16a34a] active:bg-[#16a34a] text-white text-[0.88rem] font-medium px-7 py-3 rounded-full transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)] hover:-translate-y-0.5"
           >
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
               <path
