@@ -2,6 +2,10 @@ import { useState, useRef } from "react";
 import { Select, MenuItem } from "@mui/material";
 import emailjs from "@emailjs/browser";
 
+import { FileText } from "lucide-react";
+import { REGULATIONS } from "../utils";
+
+
 /* ─────────────────────────────────────────
    EMAILJS CONFIG
 ───────────────────────────────────────── */
@@ -812,16 +816,24 @@ export default function SMSQuiz() {
               <div className="w-full h-[200px] bg-gradient-to-br from-[#0071e3]/20 to-[#34aadc]/20 rounded-[12px] mb-4 flex items-center justify-center overflow-hidden">
                 <div className="text-6xl">📱</div>
               </div>
-              <p className={`text-sm font-semibold mb-2 ${winner.dark ? "text-white/60" : "text-[#6e6e73]"}`}>
+              <p
+                className={`text-sm font-semibold mb-2 ${winner.dark ? "text-white/60" : "text-[#6e6e73]"}`}
+              >
                 Номер телефона
               </p>
-              <p className={`text-lg font-bold mb-3 ${winner.dark ? "text-white" : "text-[#1d1d1f]"}`}>
+              <p
+                className={`text-lg font-bold mb-3 ${winner.dark ? "text-white" : "text-[#1d1d1f]"}`}
+              >
                 {winner.phone}
               </p>
-              <p className={`text-[0.9rem] font-semibold mb-3 ${winner.dark ? "text-[#0a84ff]" : "text-[#0071e3]"}`}>
+              <p
+                className={`text-[0.9rem] font-semibold mb-3 ${winner.dark ? "text-[#0a84ff]" : "text-[#0071e3]"}`}
+              >
                 {winner.pts}
               </p>
-              <p className={`text-[0.85rem] font-medium ${winner.dark ? "text-white/70" : "text-[#6e6e73]"}`}>
+              <p
+                className={`text-[0.85rem] font-medium ${winner.dark ? "text-white/70" : "text-[#6e6e73]"}`}
+              >
                 {winner.prize}
               </p>
             </div>
@@ -833,7 +845,9 @@ export default function SMSQuiz() {
           <div className="max-w-[500px] mx-auto">
             {/* Карточка */}
             <div className="anim-pop rounded-[20px] p-6 bg-[#f5f5f7] text-center">
-              <div className="text-5xl mb-4">{WINNERS[currentWinnerIndex].medal}</div>
+              <div className="text-5xl mb-4">
+                {WINNERS[currentWinnerIndex].medal}
+              </div>
               <div className="w-full h-[220px] bg-gradient-to-br from-[#0071e3]/20 to-[#34aadc]/20 rounded-[12px] mb-4 flex items-center justify-center overflow-hidden">
                 <div className="text-6xl">📱</div>
               </div>
@@ -856,7 +870,7 @@ export default function SMSQuiz() {
               <button
                 onClick={() =>
                   setCurrentWinnerIndex((prev) =>
-                    prev === 0 ? WINNERS.length - 1 : prev - 1
+                    prev === 0 ? WINNERS.length - 1 : prev - 1,
                   )
                 }
                 className="w-10 h-10 rounded-full bg-[#f5f5f7] border border-black/[0.12] flex items-center justify-center cursor-pointer hover:bg-[#e8e8eb] transition-colors"
@@ -884,7 +898,7 @@ export default function SMSQuiz() {
               <button
                 onClick={() =>
                   setCurrentWinnerIndex((prev) =>
-                    prev === WINNERS.length - 1 ? 0 : prev + 1
+                    prev === WINNERS.length - 1 ? 0 : prev + 1,
                   )
                 }
                 className="w-10 h-10 rounded-full bg-[#f5f5f7] border border-black/[0.12] flex items-center justify-center cursor-pointer hover:bg-[#e8e8eb] transition-colors"
@@ -1155,39 +1169,32 @@ export default function SMSQuiz() {
             </div>
           ))}
         </div>
-        <div className="mt-8 md:mt-10 flex flex-col md:flex-row gap-10 justify-center items-center">
-          <a
-            href="/Rules-BM.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-[#eab308] hover:bg-[#ca8a04] active:bg-[#ca8a04] text-white text-[0.88rem] font-medium px-7 py-3 rounded-full transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)] hover:-translate-y-0.5"
-          >
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path
-                d="M2.5 3.5H12.5M2.5 7.5H12.5M2.5 11.5H8.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-            Регламент
-          </a>
-          <a
-            href="/Rules-MG.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-[#22c55e] hover:bg-[#16a34a] active:bg-[#16a34a] text-white text-[0.88rem] font-medium px-7 py-3 rounded-full transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)] hover:-translate-y-0.5"
-          >
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path
-                d="M2.5 3.5H12.5M2.5 7.5H12.5M2.5 11.5H8.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-            Регламент
-          </a>
+      </section>
+
+      <section id="regulations" className="py-14 md:py-20 px-[5%] text-center">
+        <p className="text-[0.72rem] font-semibold tracking-[0.08em] uppercase text-[#0071e3] mb-2.5">
+          Документы
+        </p>
+        <h2
+          className="font-bold tracking-[-0.03em] leading-[1.08] mb-8 md:mb-10"
+          style={{ fontSize: "clamp(1.8rem,4.5vw,3rem)" }}
+        >
+          Регламенты по операторам
+        </h2>
+
+        <div className="flex flex-wrap gap-4 justify-center">
+          {REGULATIONS.map((reg) => (
+            <a
+              key={reg.id}
+              href={reg.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-flex items-center gap-2 text-white text-[0.88rem] font-medium px-7 py-3 rounded-full transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)] hover:-translate-y-0.5 ${reg.className}`}
+            >
+              <FileText />
+              {reg.label}
+            </a>
+          ))}
         </div>
       </section>
 
