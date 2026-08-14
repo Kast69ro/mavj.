@@ -1,10 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Select, MenuItem } from "@mui/material";
 import emailjs from "@emailjs/browser";
 
 import { FileText } from "lucide-react";
 import { REGULATIONS } from "../utils";
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRules } from "./features/reglament/reglament";
 
 /* ─────────────────────────────────────────
    EMAILJS CONFIG
@@ -534,7 +535,13 @@ export default function SMSQuiz() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentWinnerIndex, setCurrentWinnerIndex] = useState(0);
 
+  const { data } = useSelector((state) => state.rules);
+  const dispatch = useDispatch();
   const [selectedMonth, setSelectedMonth] = useState("april");
+
+  useEffect(() => {
+    dispatch(fetchRules());
+  }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -600,6 +607,29 @@ export default function SMSQuiz() {
       setTimeout(() => setStatus("idle"), 4000);
     }
   };
+
+  const regulationsList = Array.isArray(data)
+    ? data
+        .map((reg) => {
+          const operatorKey = String(
+            reg.operator ?? reg.id ?? "",
+          ).toLowerCase();
+          const config = REGULATIONS.find((r) => {
+            const ids = [r.id, r.label].map((value) =>
+              String(value ?? "").toLowerCase(),
+            );
+            return ids.includes(operatorKey);
+          });
+
+          return {
+            ...reg,
+            label: reg.label ?? config?.label ?? reg.operator ?? "Регламент",
+            url: reg.url ?? reg.href ?? reg.file ?? config?.href ?? "#",
+            className: config?.className ?? "bg-[#0071e3] hover:bg-[#0062d2]",
+          };
+        })
+        .filter((reg) => reg.url && reg.url !== "#")
+    : [];
 
   const scrollTo = (href) => {
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
@@ -1180,12 +1210,11 @@ export default function SMSQuiz() {
         >
           Регламенты по операторам
         </h2>
-
-        <div className="flex flex-wrap gap-4 justify-center">
-          {REGULATIONS.map((reg) => (
+        <div className="flex flex-col md:flex-row gap-3 md:gap-4 justify-center items-center">
+          {regulationsList?.map((reg) => (
             <a
-              key={reg.id}
-              href={reg.href}
+              key={reg.url}
+              href={reg.url}
               target="_blank"
               rel="noopener noreferrer"
               className={`inline-flex items-center gap-2 text-white text-[0.88rem] font-medium px-7 py-3 rounded-full transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)] hover:-translate-y-0.5 ${reg.className}`}
