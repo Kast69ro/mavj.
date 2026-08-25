@@ -1268,7 +1268,7 @@ export default function SMSQuiz() {
                   </span>
                 </a>
                 <a
-                  href="tel:+992117111111"
+                  href="tel:+992115553033"
                   className="flex items-center gap-3 text-white/70 hover:text-white transition-colors duration-150 no-underline"
                 >
                   <span className="text-[#0071e3] shrink-0">
