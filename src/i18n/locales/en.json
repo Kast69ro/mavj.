@@ -1,0 +1,152 @@
+{
+  "lang": { "label": "Language" },
+  "nav": {
+    "prizes": "Prizes",
+    "how": "How to join",
+    "check": "My points",
+    "winners": "Winners",
+    "tariff": "Pricing",
+    "participate": "Join",
+    "menu": "Menu"
+  },
+  "months": [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ],
+  "points_one": "{{value}} point",
+  "points_other": "{{value}} points",
+  "place": "Place {{place}}",
+  "hero": {
+    "badge": "The {{month}} draw is live",
+    "title1": "Answer.",
+    "title2": "Win.",
+    "subtitle": "A daily SMS quiz. Earn points and win an iPhone, Apple Watch and AirPods every period.",
+    "cta": "Join — *3033*1#",
+    "check": "Check points"
+  },
+  "stats": {
+    "currency": "TJS",
+    "perDay": "per day for subscription",
+    "questions": "questions per day",
+    "maxPoints": "max points per day"
+  },
+  "prizes": {
+    "eyebrow": "Prizes of the month",
+    "title": "Three prizes every month",
+    "subtitle": "The prize goes to the leader of each place who reaches the points threshold. If the threshold isn't reached, the prize rolls into the jackpot.",
+    "from": "from {{value}} points"
+  },
+  "how": {
+    "eyebrow": "How to join",
+    "title": "Four steps to a prize",
+    "steps": {
+      "subscribe": { "title": "Subscribe", "desc": "Dial *3033*1#. 1.60 TJS per day, all operators in Tajikistan." },
+      "answer": { "title": "Answer", "desc": "Up to {{questions}} questions a day via SMS: 5 basic and 9 in the extra pack." },
+      "collect": { "title": "Earn points", "desc": "5–10 points per correct answer, up to {{max}} a day." },
+      "prize": { "title": "Get a prize", "desc": "The top 3 of the month win an iPhone, Apple Watch and AirPods." }
+    }
+  },
+  "check": {
+    "eyebrow": "My points",
+    "title": "Check your result",
+    "subtitle": "Enter the number your subscription is registered to.",
+    "phoneLabel": "Phone number",
+    "submit": "Check",
+    "phoneError": "Enter 9 digits of the number, e.g. 90 123 4567",
+    "ofFirst": "of {{value}} to 1st place",
+    "result": {
+      "first": "You're in the running for iPhone 17 Pro Max",
+      "second": "You're in the running for Apple Watch Series 11",
+      "third": "You're in the running for AirPods 4",
+      "left_one": "{{value}} point left to the AirPods threshold",
+      "left_other": "{{value}} points left to the AirPods threshold"
+    }
+  },
+  "winners": {
+    "eyebrow": "Hall of fame",
+    "title": "Winners of the month",
+    "month": "Month",
+    "privacy": "Numbers are partially hidden for privacy.",
+    "prev": "Previous",
+    "next": "Next",
+    "dot": "Winner {{n}}"
+  },
+  "tariffs": {
+    "eyebrow": "Pricing",
+    "title": "Transparent prices",
+    "subtitle": "No hidden fees. The extra pack is activated only with your consent.",
+    "basic": {
+      "tag": "Basic subscription",
+      "per": "TJS per day",
+      "items": [
+        "5 questions every day",
+        "5 points per correct answer",
+        "Up to 25 points a day",
+        "Entry into the monthly draw"
+      ]
+    },
+    "extra": {
+      "tag": "Extra pack",
+      "per": "TJS per day, on request",
+      "items": [
+        "+9 extra questions",
+        "10 points per correct answer",
+        "+90 points a day",
+        "Activated only after your confirmation"
+      ]
+    }
+  },
+  "rules": {
+    "eyebrow": "Rules",
+    "title": "Terms of participation",
+    "regulations": "Regulations by operator",
+    "regulationFallback": "Regulation",
+    "items": {
+      "oneNumber": { "title": "1 number — 1 player", "desc": "Each number is registered once. Multiple accounts are not allowed." },
+      "timer": { "title": "1 minute to answer", "desc": "The timer starts when you receive a question. Only the first answer counts." },
+      "reset": { "title": "Points reset", "desc": "Points are reset on the 1st of every month." },
+      "jackpot": { "title": "Jackpot", "desc": "If the threshold isn't reached, the prize rolls over to the next draw." },
+      "antifraud": { "title": "Anti-fraud", "desc": "Bots are detected automatically. Violators are disqualified." },
+      "stop": { "title": "Unsubscribe: STOP", "desc": "Send STOP to 3033 to unsubscribe at any time." }
+    }
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Have a question? Write to us",
+    "text": "Our support team will answer questions about subscriptions, points and prize collection.",
+    "address": "Dushanbe, Tajikistan",
+    "successTitle": "Message sent",
+    "successText": "We'll get back to you shortly.",
+    "sendMore": "Send another",
+    "sendError": "Couldn't send. Please try again later.",
+    "sending": "Sending…",
+    "send": "Send",
+    "fields": {
+      "from_name": "Full name",
+      "phone": "Phone",
+      "reply_to": "Email",
+      "message": "Message"
+    },
+    "errors": {
+      "from_name": "Enter your name",
+      "phone": "Enter a phone number",
+      "reply_to": "Enter a valid email",
+      "message": "Enter a message"
+    }
+  },
+  "footer": {
+    "country": "Tajikistan",
+    "feedback": "Feedback"
+  },
+  "sticky": "Join — 1.60 TJS/day",
+  "phoneMock": {
+    "question": "Question 12 of 14",
+    "text": "Capital of Tajikistan?",
+    "timer": "0:42 left",
+    "a1": "Dushanbe",
+    "a2": "Khujand",
+    "a3": "Khorog",
+    "points": "Points this month",
+    "of": "of 2,000"
+  }
+}
