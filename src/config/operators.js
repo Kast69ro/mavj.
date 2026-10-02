@@ -23,18 +23,18 @@ export const MAIN_THEME = {
 };
 
 export const OPERATORS = {
-  tcell: {
-    name: "Tcell",
-    regulation: "tc",
+  babilon: {
+    name: "Babilon-M",
+    regulation: "bm",
     theme: {
-      accent: "#7b2d8e",
-      accentHover: "#65247a",
-      accentText: "#7b2d8e",
-      onAccent: "#ffffff",
-      accentSoft: "#f4e9f7",
-      accentOnDark: "#d29be3",
-      deep: "#1f0a29",
-      screen: "#4a1a5a",
+      accent: "#eab308",
+      accentHover: "#ca8a04",
+      accentText: "#a16207",
+      onAccent: "#1f1600",
+      accentSoft: "#fdf4d3",
+      accentOnDark: "#facc15",
+      deep: "#241c05",
+      screen: "#6b4f05",
     },
   },
   megafon: {
@@ -51,23 +51,27 @@ export const OPERATORS = {
       screen: "#0b5a33",
     },
   },
-  babilon: {
-    name: "Babilon-M",
-    regulation: "bm",
+  tcell: {
+    name: "Tcell",
+    regulation: "tc",
     theme: {
-      accent: "#eab308",
-      accentHover: "#ca8a04",
-      accentText: "#a16207",
-      onAccent: "#1f1600",
-      accentSoft: "#fdf4d3",
-      accentOnDark: "#facc15",
-      deep: "#241c05",
-      screen: "#6b4f05",
+      accent: "#7b2d8e",
+      accentHover: "#65247a",
+      accentText: "#7b2d8e",
+      onAccent: "#ffffff",
+      accentSoft: "#f4e9f7",
+      accentOnDark: "#d29be3",
+      deep: "#1f0a29",
+      screen: "#4a1a5a",
     },
   },
 };
 
 export const OPERATOR_SLUGS = Object.keys(OPERATORS);
+
+/** Операторы, которые скоро подключатся: серая неактивная кнопка, страницы нет.
+    Когда оператор подключится — перенесите его в OPERATORS с цветами */
+export const COMING_SOON = [{ id: "zet", name: "ZET-Mobile" }];
 
 /** theme → { "--accent": "#…", … } для style={…} */
 export const themeVars = (theme) =>

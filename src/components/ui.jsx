@@ -14,7 +14,7 @@ import {
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { LANGUAGES, sitePath } from "@/i18n/config";
-import { OPERATORS, OPERATOR_SLUGS, themeVars } from "@/config/operators";
+import { OPERATORS, OPERATOR_SLUGS, COMING_SOON, themeVars } from "@/config/operators";
 
 /* ─────────────────────────────────────────
    РЕГЛАМЕНТЫ ПО ОПЕРАТОРАМ
@@ -433,6 +433,18 @@ export function OperatorBar({ current }) {
             </Link>
           );
         })}
+        {COMING_SOON.map(({ id, name }) => (
+          <span
+            key={id}
+            aria-disabled="true"
+            title={t("nav.soon")}
+            className="shrink-0 inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3.5 py-1.5 text-sm font-bold text-[rgba(79,98,108,0.55)] cursor-not-allowed select-none"
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-[rgba(79,98,108,0.3)]" aria-hidden="true" />
+            {name}
+            <span className="sr-only"> — {t("nav.soon")}</span>
+          </span>
+        ))}
       </div>
     </div>
   );
