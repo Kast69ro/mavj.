@@ -12,7 +12,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { LANGUAGES } from "./src/i18n";
+import Link from "next/link";
+import { LANGUAGES, sitePath } from "@/i18n/config";
+import { OPERATORS, OPERATOR_SLUGS, themeVars } from "@/config/operators";
 
 /* ─────────────────────────────────────────
    РЕГЛАМЕНТЫ ПО ОПЕРАТОРАМ
@@ -40,7 +42,7 @@ export const REGULATIONS = [
 
 /* ─────────────────────────────────────────
    EMAILJS
-   (лучше перенести в .env: import.meta.env.VITE_EMAILJS_PUBLIC_KEY и т.д.)
+   (публичные ключи — их видно в браузере, это нормально для EmailJS)
 ───────────────────────────────────────── */
 export const EMAILJS_PUBLIC_KEY = "Zt-8PKYSygAWj0S3V";
 export const EMAILJS_SERVICE_ID = "service_lsibncc";
@@ -101,12 +103,10 @@ export const HOW_STEPS = [
   { Icon: Trophy, key: "prize" },
 ];
 
-// TODO: заменить на данные с бэкенда по месяцу
-export const WINNERS = [
-  { place: 1, phone: "+992 90 *** 78XX", pts: 2145, prize: "iPhone 17 Pro Max" },
-  { place: 2, phone: "+992 93 *** 44XX", pts: 1890, prize: "Apple Watch Series 11" },
-  { place: 3, phone: "+992 98 *** 12XX", pts: 1023, prize: "AirPods 4 ANC" },
-];
+/* Победители периода. Пока пусто — на сайте заглушка «Первые победители — скоро».
+   TODO: брать с бэкенда по периоду. Формат записи:
+   { place: 1, phone: "+992 90 *** 78XX", pts: 2145, prize: "iPhone 17 Pro Max" } */
+export const WINNERS = [];
 
 export const TARIFFS = [
   { key: "basic", featured: false, price: "1,60" },
@@ -157,7 +157,7 @@ export const validateContact = (form) => {
   return errs;
 };
 
-/** Данные регламентов из API + локальный конфиг REGULATIONS → список ссылок */
+/** Данные регламентов из API + локальный конфиг REGULATIONS → список ссылок (operatorId — id из REGULATIONS) */
 export const mapRegulations = (data, fallbackLabel) =>
   Array.isArray(data)
     ? data
@@ -168,6 +168,7 @@ export const mapRegulations = (data, fallbackLabel) =>
           );
           return {
             ...reg,
+            operatorId: config?.id,
             label: reg.label ?? config?.label ?? reg.operator ?? fallbackLabel,
             url: reg.url ?? reg.href ?? reg.file ?? config?.href ?? "#",
             className: config?.className ?? "bg-[var(--accent)] hover:bg-[var(--accent-hover)]",
@@ -181,58 +182,11 @@ export const scrollToId = (href) =>
   document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
 
 /* ─────────────────────────────────────────
-   СТИЛИ (цвета, анимации) — вставьте <QuizStyles /> один раз в корень страницы
-───────────────────────────────────────── */
-const QUIZ_CSS = `
-:root {
-  --ink: #0b1430;
-  --muted: #4f626c;
-  --surface: #f5f7fa;
-  --line: rgba(11, 31, 42, 0.1);
-  --accent: #1d4ed8;
-  --accent-hover: #1e3fae;
-  --accent-soft: #e6ecfd;
-  --accent-on-dark: #6b9bff;
-  --deep: #0a1433;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-@keyframes mq-up   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-@keyframes mq-pop  { from { opacity: 0; transform: scale(0.97); }     to { opacity: 1; transform: none; } }
-@keyframes mq-down { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-
-.mq-a0   { animation: mq-up 0.6s ease both; }
-.mq-a1   { animation: mq-up 0.6s 0.1s ease both; }
-.mq-a2   { animation: mq-up 0.6s 0.2s ease both; }
-.mq-a3   { animation: mq-up 0.6s 0.3s ease both; }
-.mq-pop  { animation: mq-pop 0.25s ease both; }
-.mq-down { animation: mq-down 0.2s ease both; }
-.mq-bar  { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation: none !important;
-    transition: none !important;
-    scroll-behavior: auto !important;
-  }
-}
-`;
-
-export function QuizStyles() {
-  return <style>{QUIZ_CSS}</style>;
-}
-
-
-/* ─────────────────────────────────────────
    SVG DEVICES
 ───────────────────────────────────────── */
 const deviceCls =
   "block mx-auto transition-transform duration-500 ease-out group-hover:-translate-y-2";
 const deviceShadow = { filter: "drop-shadow(0 24px 40px rgba(11,31,42,0.18))" };
-const font = "Onest, sans-serif";
 
 export function IPhoneSVG({ className = "w-[150px] md:w-[180px]" }) {
   const { t } = useTranslation();
@@ -242,29 +196,29 @@ export function IPhoneSVG({ className = "w-[150px] md:w-[180px]" }) {
       <rect x="7" y="5" width="176" height="370" rx="44" fill="#0b1f2a" />
       <rect x="9" y="7" width="172" height="366" rx="42" fill="url(#mq-screen)" />
       <rect x="68" y="20" width="54" height="14" rx="7" fill="#000" />
-      <text x="26" y="44" fontFamily={font} fontSize="9" fill="white" fontWeight="600">9:41</text>
+      <text x="26" y="44" fontSize="9" fill="white" fontWeight="600">9:41</text>
       <rect x="18" y="60" width="154" height="72" rx="14" fill="rgba(255,255,255,0.08)" />
-      <text x="95" y="84" fontFamily={font} fontSize="8.5" fill="rgba(255,255,255,0.9)" textAnchor="middle" fontWeight="700">{t("phoneMock.question")}</text>
-      <text x="95" y="100" fontFamily={font} fontSize="8" fill="rgba(255,255,255,0.75)" textAnchor="middle">{t("phoneMock.text")}</text>
-      <text x="95" y="117" fontFamily={font} fontSize="7" fill="rgba(255,255,255,0.55)" textAnchor="middle">{t("phoneMock.timer")}</text>
-      <rect x="18" y="142" width="154" height="30" rx="10" fill="#1d4ed8" />
-      <text x="95" y="161" fontFamily={font} fontSize="9" fill="white" textAnchor="middle" fontWeight="700">{t("phoneMock.a1")}</text>
+      <text x="95" y="84" fontSize="8.5" fill="rgba(255,255,255,0.9)" textAnchor="middle" fontWeight="700">{t("phoneMock.question")}</text>
+      <text x="95" y="100" fontSize="8" fill="rgba(255,255,255,0.75)" textAnchor="middle">{t("phoneMock.text")}</text>
+      <text x="95" y="117" fontSize="7" fill="rgba(255,255,255,0.55)" textAnchor="middle">{t("phoneMock.timer")}</text>
+      <rect x="18" y="142" width="154" height="30" rx="10" style={{ fill: "var(--accent)" }} />
+      <text x="95" y="161" fontSize="9" fill="white" textAnchor="middle" fontWeight="700">{t("phoneMock.a1")}</text>
       <rect x="18" y="178" width="154" height="28" rx="10" fill="rgba(255,255,255,0.08)" />
-      <text x="95" y="196" fontFamily={font} fontSize="9" fill="rgba(255,255,255,0.7)" textAnchor="middle">{t("phoneMock.a2")}</text>
+      <text x="95" y="196" fontSize="9" fill="rgba(255,255,255,0.7)" textAnchor="middle">{t("phoneMock.a2")}</text>
       <rect x="18" y="212" width="154" height="28" rx="10" fill="rgba(255,255,255,0.08)" />
-      <text x="95" y="230" fontFamily={font} fontSize="9" fill="rgba(255,255,255,0.7)" textAnchor="middle">{t("phoneMock.a3")}</text>
-      <text x="18" y="260" fontFamily={font} fontSize="7" fill="rgba(255,255,255,0.6)">{t("phoneMock.points")}</text>
+      <text x="95" y="230" fontSize="9" fill="rgba(255,255,255,0.7)" textAnchor="middle">{t("phoneMock.a3")}</text>
+      <text x="18" y="260" fontSize="7" fill="rgba(255,255,255,0.6)">{t("phoneMock.points")}</text>
       <rect x="18" y="266" width="154" height="5" rx="2.5" fill="rgba(255,255,255,0.1)" />
-      <rect x="18" y="266" width="96" height="5" rx="2.5" fill="#6b9bff" />
-      <text x="18" y="288" fontFamily={font} fontSize="13" fill="white" fontWeight="800">1 245</text>
-      <text x="172" y="288" fontFamily={font} fontSize="7" fill="rgba(255,255,255,0.6)" textAnchor="end">{t("phoneMock.of")}</text>
+      <rect x="18" y="266" width="96" height="5" rx="2.5" style={{ fill: "var(--accent-on-dark)" }} />
+      <text x="18" y="288" fontSize="13" fill="white" fontWeight="800">1 245</text>
+      <text x="172" y="288" fontSize="7" fill="rgba(255,255,255,0.6)" textAnchor="end">{t("phoneMock.of")}</text>
       <rect x="75" y="355" width="40" height="4" rx="2" fill="rgba(255,255,255,0.25)" />
       <rect x="185" y="95" width="5" height="50" rx="2.5" fill="#24343c" />
       <rect x="0" y="110" width="5" height="34" rx="2.5" fill="#24343c" />
       <rect x="0" y="152" width="5" height="34" rx="2.5" fill="#24343c" />
       <defs>
         <linearGradient id="mq-screen" x1="9" y1="7" x2="9" y2="373" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#1e3a8a" />
+          <stop offset="0" style={{ stopColor: "var(--screen)" }} />
           <stop offset=".5" stopColor="#0d1840" />
           <stop offset="1" stopColor="#071820" />
         </linearGradient>
@@ -281,12 +235,12 @@ export function WatchSVG({ className = "w-[96px] md:w-[110px]" }) {
       <rect x="14" y="26" width="102" height="158" rx="26" fill="#24343c" />
       <rect x="19" y="31" width="92" height="148" rx="21" fill="#0b1f2a" />
       <rect x="24" y="40" width="82" height="130" rx="16" fill="url(#mq-watch)" />
-      <text x="65" y="92" fontFamily={font} fontSize="22" fontWeight="800" fill="white" textAnchor="middle">10:09</text>
-      <path d="M40 128 Q46 118 52 128 T64 128 T76 128 T88 128" stroke="#6b9bff" strokeWidth="2" fill="none" />
+      <text x="65" y="92" fontSize="22" fontWeight="800" fill="white" textAnchor="middle">10:09</text>
+      <path d="M40 128 Q46 118 52 128 T64 128 T76 128 T88 128" style={{ stroke: "var(--accent-on-dark)" }} strokeWidth="2" fill="none" />
       <rect x="112" y="70" width="5" height="28" rx="2.5" fill="#3a4a52" />
       <defs>
         <linearGradient id="mq-watch" x1="24" y1="40" x2="24" y2="170" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#1e3a8a" />
+          <stop offset="0" style={{ stopColor: "var(--screen)" }} />
           <stop offset="1" stopColor="#071820" />
         </linearGradient>
       </defs>
@@ -304,7 +258,7 @@ export function AirPodsSVG({ className = "w-[84px] md:w-[96px]" }) {
       <ellipse cx="40" cy="62" rx="9" ry="14" fill="white" />
       <ellipse cx="80" cy="62" rx="12" ry="18" fill="#e3eae9" />
       <ellipse cx="80" cy="62" rx="9" ry="14" fill="white" />
-      <circle cx="60" cy="152" r="3.5" fill="#1d4ed8" />
+      <circle cx="60" cy="152" r="3.5" style={{ fill: "var(--accent)" }} />
     </svg>
   );
 }
@@ -336,7 +290,7 @@ export function Wave({ fill = "#ffffff", flip = false }) {
 ───────────────────────────────────────── */
 export function Eyebrow({ children, dark }) {
   return (
-    <p className={`text-xs font-bold tracking-[0.12em] uppercase mb-3 ${dark ? "text-[var(--accent-on-dark)]" : "text-[var(--accent)]"}`}>
+    <p className={`text-xs font-bold tracking-[0.12em] uppercase mb-3 ${dark ? "text-[var(--accent-on-dark)]" : "text-[var(--accent-text)]"}`}>
       {children}
     </p>
   );
@@ -372,7 +326,7 @@ export function PrimaryButton({ href, children, className = "" }) {
   return (
     <a
       href={href}
-      className={`inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold no-underline px-6 py-3.5 text-base transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] font-bold no-underline px-6 py-3.5 text-base transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${className}`}
     >
       {children}
     </a>
@@ -416,7 +370,7 @@ export function WinnerCard({ w }) {
         <PlaceDevice place={w.place} className={w.place === 1 ? "w-[56px]" : w.place === 2 ? "w-[52px]" : "w-[48px]"} />
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-bold tracking-[0.1em] uppercase text-[var(--accent)] mb-1">
+        <p className="text-xs font-bold tracking-[0.1em] uppercase text-[var(--accent-text)] mb-1">
           {t("place", { place: w.place })}
         </p>
         <p className="text-lg font-extrabold tracking-wide whitespace-nowrap">{w.phone}</p>
@@ -427,27 +381,59 @@ export function WinnerCard({ w }) {
   );
 }
 
-/** Переключатель языка RU / TJ / EN */
-export function LanguageSwitcher({ className = "" }) {
+/** Переключатель языка RU / TJ / EN — обычные ссылки, у каждого языка свой URL (важно для SEO) */
+export function LanguageSwitcher({ operator, className = "" }) {
   const { t, i18n } = useTranslation();
-  const current = i18n.resolvedLanguage;
+  const current = i18n.language;
   return (
-    <div role="group" aria-label={t("lang.label")} className={`inline-flex rounded-full bg-[var(--surface)] p-0.5 ${className}`}>
+    <nav aria-label={t("lang.label")} className={`inline-flex rounded-full bg-[var(--surface)] p-0.5 ${className}`}>
       {LANGUAGES.map(({ code, label }) => (
-        <button
+        <Link
           key={code}
-          type="button"
+          href={sitePath(operator, code)}
+          hrefLang={code}
           lang={code}
-          onClick={() => i18n.changeLanguage(code)}
-          aria-pressed={current === code}
-          className={`rounded-full border-none cursor-pointer px-2.5 py-1 text-xs font-bold transition-colors ${
-            current === code ? "bg-white text-[var(--ink)] shadow-sm" : "bg-transparent text-[var(--muted)] hover:text-[var(--ink)]"
+          aria-current={current === code ? "page" : undefined}
+          className={`rounded-full no-underline px-2.5 py-1 text-xs font-bold transition-colors ${
+            current === code ? "bg-white text-[var(--ink)] shadow-sm" : "text-[var(--muted)] hover:text-[var(--ink)]"
           }`}
-          style={{ fontFamily: "inherit" }}
         >
           {label}
-        </button>
+        </Link>
       ))}
+    </nav>
+  );
+}
+
+/** Кнопки операторов под навигацией: переход на /tcell/, /megafon/ … (на том же языке) */
+export function OperatorBar({ current }) {
+  const { t, i18n } = useTranslation();
+  return (
+    <div className="border-t border-[var(--line)]">
+      <div className="max-w-[1120px] mx-auto h-12 px-5 flex items-center gap-2 overflow-x-auto">
+        <span className="hidden sm:inline shrink-0 mr-1 text-xs font-bold tracking-[0.1em] uppercase text-[var(--muted)]">
+          {t("nav.operators")}
+        </span>
+        {OPERATOR_SLUGS.map((slug) => {
+          const active = slug === current;
+          return (
+            <Link
+              key={slug}
+              href={sitePath(slug, i18n.language)}
+              aria-current={active ? "page" : undefined}
+              style={themeVars(OPERATORS[slug].theme)}
+              className={`shrink-0 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-bold no-underline transition-colors ${
+                active
+                  ? "bg-[var(--accent)] border-[var(--accent)] text-[var(--on-accent)]"
+                  : "bg-white border-[var(--line)] text-[var(--ink)] hover:border-[var(--accent)]"
+              }`}
+            >
+              <span className={`w-2.5 h-2.5 rounded-full ${active ? "bg-[var(--on-accent)]" : "bg-[var(--accent)]"}`} aria-hidden="true" />
+              {OPERATORS[slug].name}
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }

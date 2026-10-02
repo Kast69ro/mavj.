@@ -1,5 +1,13 @@
 {
-  "lang": { "label": "Language" },
+  "meta": {
+    "title": "Mavj Quiz (Мавч) for {{operator}} subscribers — SMS quiz with prizes",
+    "description": "Mavj (Мавч) is a daily SMS quiz for {{operator}} subscribers: answer questions, earn points and win iPhone 17 Pro Max, Apple Watch and AirPods. Subscribe — *3033*1#.",
+    "mainTitle": "Mavj Quiz (Мавч) — SMS quiz with prizes",
+    "mainDescription": "Mavj (Мавч) is a daily SMS quiz for Tcell, MegaFon and Babilon-M subscribers: answer questions, earn points and win iPhone 17 Pro Max, Apple Watch and AirPods. Subscribe — *3033*1#."
+  },
+  "lang": {
+    "label": "Language"
+  },
   "nav": {
     "prizes": "Prizes",
     "how": "How to join",
@@ -7,17 +15,28 @@
     "winners": "Winners",
     "tariff": "Pricing",
     "participate": "Join",
-    "menu": "Menu"
+    "menu": "Menu",
+    "operators": "Your operator"
   },
   "months": [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
   ],
   "points_one": "{{value}} point",
   "points_other": "{{value}} points",
   "place": "Place {{place}}",
   "hero": {
-    "badge": "The {{month}} draw is live",
+    "badge": "The current period draw is live",
     "title1": "Answer.",
     "title2": "Win.",
     "subtitle": "A daily SMS quiz. Earn points and win an iPhone, Apple Watch and AirPods every period.",
@@ -31,8 +50,8 @@
     "maxPoints": "max points per day"
   },
   "prizes": {
-    "eyebrow": "Prizes of the month",
-    "title": "Three prizes every month",
+    "eyebrow": "Prizes of the period",
+    "title": "Three prizes every period",
     "subtitle": "The prize goes to the leader of each place who reaches the points threshold. If the threshold isn't reached, the prize rolls into the jackpot.",
     "from": "from {{value}} points"
   },
@@ -40,10 +59,22 @@
     "eyebrow": "How to join",
     "title": "Four steps to a prize",
     "steps": {
-      "subscribe": { "title": "Subscribe", "desc": "Dial *3033*1#. 1.60 TJS per day, all operators in Tajikistan." },
-      "answer": { "title": "Answer", "desc": "Up to {{questions}} questions a day via SMS: 5 basic and 9 in the extra pack." },
-      "collect": { "title": "Earn points", "desc": "5–10 points per correct answer, up to {{max}} a day." },
-      "prize": { "title": "Get a prize", "desc": "The top 3 of the month win an iPhone, Apple Watch and AirPods." }
+      "subscribe": {
+        "title": "Subscribe",
+        "desc": "Dial *3033*1#. 1.60 TJS per day, all operators in Tajikistan."
+      },
+      "answer": {
+        "title": "Answer",
+        "desc": "Up to {{questions}} questions a day via SMS: 5 basic and 9 in the extra pack."
+      },
+      "collect": {
+        "title": "Earn points",
+        "desc": "5–10 points per correct answer, up to {{max}} a day."
+      },
+      "prize": {
+        "title": "Get a prize",
+        "desc": "The top 3 of the period win an iPhone, Apple Watch and AirPods."
+      }
     }
   },
   "check": {
@@ -64,12 +95,16 @@
   },
   "winners": {
     "eyebrow": "Hall of fame",
-    "title": "Winners of the month",
-    "month": "Month",
+    "title": "Winners of the period",
     "privacy": "Numbers are partially hidden for privacy.",
     "prev": "Previous",
     "next": "Next",
-    "dot": "Winner {{n}}"
+    "dot": "Winner {{n}}",
+    "period": "Period",
+    "empty": {
+      "title": "First winners coming soon",
+      "text": "Results will be announced after the first period ends. Subscribe and earn points — your number could appear here."
+    }
   },
   "tariffs": {
     "eyebrow": "Pricing",
@@ -82,7 +117,7 @@
         "5 questions every day",
         "5 points per correct answer",
         "Up to 25 points a day",
-        "Entry into the monthly draw"
+        "Entry into every period draw"
       ]
     },
     "extra": {
@@ -99,16 +134,35 @@
   "rules": {
     "eyebrow": "Rules",
     "title": "Terms of participation",
-    "regulations": "Regulations by operator",
     "regulationFallback": "Regulation",
     "items": {
-      "oneNumber": { "title": "1 number — 1 player", "desc": "Each number is registered once. Multiple accounts are not allowed." },
-      "timer": { "title": "1 minute to answer", "desc": "The timer starts when you receive a question. Only the first answer counts." },
-      "reset": { "title": "Points reset", "desc": "Points are reset on the 1st of every month." },
-      "jackpot": { "title": "Jackpot", "desc": "If the threshold isn't reached, the prize rolls over to the next draw." },
-      "antifraud": { "title": "Anti-fraud", "desc": "Bots are detected automatically. Violators are disqualified." },
-      "stop": { "title": "Unsubscribe: STOP", "desc": "Send STOP to 3033 to unsubscribe at any time." }
-    }
+      "oneNumber": {
+        "title": "1 number — 1 player",
+        "desc": "Each number is registered once. Multiple accounts are not allowed."
+      },
+      "timer": {
+        "title": "1 minute to answer",
+        "desc": "The timer starts when you receive a question. Only the first answer counts."
+      },
+      "reset": {
+        "title": "Points reset",
+        "desc": "Points are reset at the start of every period."
+      },
+      "jackpot": {
+        "title": "Jackpot",
+        "desc": "If the threshold isn't reached, the prize rolls over to the next draw."
+      },
+      "antifraud": {
+        "title": "Anti-fraud",
+        "desc": "Bots are detected automatically. Violators are disqualified."
+      },
+      "stop": {
+        "title": "Unsubscribe: STOP",
+        "desc": "Send STOP to 3033 to unsubscribe at any time."
+      }
+    },
+    "regulation": "Rules for {{operator}} subscribers",
+    "regulations": "Rules by operator"
   },
   "contact": {
     "eyebrow": "Contact",
@@ -146,7 +200,7 @@
     "a1": "Dushanbe",
     "a2": "Khujand",
     "a3": "Khorog",
-    "points": "Points this month",
+    "points": "Points this period",
     "of": "of 2,000"
   }
 }

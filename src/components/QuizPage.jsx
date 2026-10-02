@@ -1,6 +1,9 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import emailjs from "@emailjs/browser";
-import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import {
   FileText,
@@ -14,6 +17,7 @@ import {
   Search,
   Loader2,
   CheckCircle2,
+  Trophy,
 } from "lucide-react";
 
 import {
@@ -40,7 +44,6 @@ import {
   validateContact,
   mapRegulations,
   scrollToId,
-  QuizStyles,
   IPhoneSVG,
   WatchSVG,
   AirPodsSVG,
@@ -51,11 +54,43 @@ import {
   ContactField,
   WinnerCard,
   LanguageSwitcher,
-} from "../utils.jsx";
-import { fetchRules } from "./features/reglament/reglament";
+  OperatorBar,
+} from "./ui";
+import { OPERATORS, OPERATOR_SLUGS, themeVars } from "@/config/operators";
+import { sitePath } from "@/i18n/config";
+import logo from "@/assets/logo.png";
 
-export default function SMSQuiz() {
-  const { t } = useTranslation();
+/** id регламента ("tc") → оператор ("tcell") */
+const OPERATOR_BY_REGULATION = Object.fromEntries(OPERATOR_SLUGS.map((slug) => [OPERATORS[slug].regulation, slug]));
+
+const RULES_API = "https://mavj.tj/api/admin/rules";
+
+/** Регламенты с API (грузятся в браузере, чтобы ссылки всегда были свежими) */
+function useRegulations() {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(RULES_API, { headers: { accept: "application/json" }, signal: controller.signal })
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then((payload) => {
+        const list = [payload, payload?.rules, payload?.data].find(Array.isArray);
+        setData(list ?? []);
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") console.error("Rules API error:", err);
+      });
+    return () => controller.abort();
+  }, []);
+  return data;
+}
+
+/**
+ * Страница викторины: основной сайт или сайт оператора.
+ * operator — { slug, name, regulation, theme } из src/config/operators.js; у основного сайта slug = null
+ * builtAt  — дата сборки (ISO): с ней страница рендерится в HTML, в браузере сразу заменяется на текущую
+ */
+export default function QuizPage({ operator, builtAt }) {
+  const { t, i18n } = useTranslation();
   const formRef = useRef(null);
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -66,14 +101,18 @@ export default function SMSQuiz() {
   const [status, setStatus] = useState("idle");
   const [menuOpen, setMenuOpen] = useState(false);
   const [winnerIdx, setWinnerIdx] = useState(0);
-  const [selectedMonth, setSelectedMonth] = useState(MONTHS[new Date().getMonth()]);
+  const [today, setToday] = useState(() => new Date(builtAt));
+  const [selectedMonth, setSelectedMonth] = useState(MONTHS[today.getMonth()]);
 
-  const { data } = useSelector((state) => state.rules);
-  const dispatch = useDispatch();
+  const data = useRegulations();
 
+  /* HTML собран заранее — в браузере подставляем настоящую текущую дату */
   useEffect(() => {
-    dispatch(fetchRules());
-  }, [dispatch]);
+    const now = new Date();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- синхронизация с часами клиента после гидрации
+    setToday(now);
+    setSelectedMonth(MONTHS[now.getMonth()]);
+  }, []);
 
   /* ── Проверка баллов ── */
   const handleCheck = (e) => {
@@ -122,7 +161,10 @@ export default function SMSQuiz() {
 
   const fieldError = (name) => (errors[name] ? t(`contact.errors.${name}`) : "");
 
-  const regulationsList = mapRegulations(data, t("rules.regulationFallback"));
+  /* Основной сайт — регламенты всех операторов, сайт оператора — только его */
+  const regulationsList = mapRegulations(data, t("rules.regulationFallback")).filter(
+    (reg) => !operator.slug || reg.operatorId === operator.regulation,
+  );
 
   const scrollTo = (href) => {
     scrollToId(href);
@@ -134,24 +176,24 @@ export default function SMSQuiz() {
     scrollTo(href);
   };
 
-  const currentYear = new Date().getFullYear();
+  const currentYear = today.getFullYear();
   const monthLabels = t("months", { returnObjects: true });
-  const monthLabel = monthLabels[MONTHS.indexOf(selectedMonth)];
 
   return (
-    <div
-      className="bg-white text-[var(--ink)] overflow-x-hidden antialiased"
-      style={{ fontFamily: "'Onest', system-ui, sans-serif" }}
-    >
-      <QuizStyles />
+    <div className="bg-white text-[var(--ink)] overflow-x-hidden antialiased" style={themeVars(operator.theme)}>
 
       {/* ── NAV ── */}
       <nav className="fixed top-0 inset-x-0 z-50 bg-white/85 backdrop-blur-xl border-b border-[var(--line)]">
         <div className="max-w-[1120px] mx-auto h-14 px-5 flex items-center justify-between">
-          <a href="#hero" onClick={navClick("#hero")} className="flex items-center gap-2 no-underline text-[var(--ink)]">
-            <img src="/logo.png" alt="" className="h-7 w-auto" />
+          <Link href={sitePath(null, i18n.language)} className="flex items-center gap-2 no-underline text-[var(--ink)]">
+            <Image src={logo} alt="" className="h-7 w-auto" priority />
             <span className="text-lg font-extrabold tracking-tight">Mavj Quiz</span>
-          </a>
+            {operator.name && (
+              <span className="rounded-full bg-[var(--accent)] text-[var(--on-accent)] text-[11px] font-bold px-2 py-0.5">
+                {operator.name}
+              </span>
+            )}
+          </Link>
 
           <ul className="hidden md:flex list-none items-center gap-1 m-0 p-0">
             {NAV_LINKS.map(({ href, key }) => (
@@ -166,12 +208,12 @@ export default function SMSQuiz() {
               </li>
             ))}
             <li className="ml-2">
-              <LanguageSwitcher />
+              <LanguageSwitcher operator={operator.slug} />
             </li>
             <li className="ml-1">
               <a
                 href={SUBSCRIBE_TEL}
-                className="inline-flex items-center rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-bold no-underline px-4 py-2 transition-colors"
+                className="inline-flex items-center rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] text-sm font-bold no-underline px-4 py-2 transition-colors"
               >
                 {t("nav.participate")}
               </a>
@@ -179,7 +221,7 @@ export default function SMSQuiz() {
           </ul>
 
           <div className="md:hidden flex items-center gap-2">
-          <LanguageSwitcher />
+          <LanguageSwitcher operator={operator.slug} />
           <button
             onClick={() => setMenuOpen((v) => !v)}
             className="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-[5px] bg-transparent border-none cursor-pointer"
@@ -192,6 +234,8 @@ export default function SMSQuiz() {
           </button>
           </div>
         </div>
+
+        <OperatorBar current={operator.slug} />
 
         {menuOpen && (
           <div className="mq-down md:hidden border-t border-[var(--line)] bg-white px-5 pb-3">
@@ -210,12 +254,12 @@ export default function SMSQuiz() {
       </nav>
 
       {/* ── HERO ── */}
-      <section id="hero" className="bg-[var(--surface)] pt-24 md:pt-32">
+      <section id="hero" className="bg-[var(--surface)] pt-36 md:pt-44">
         <div className="max-w-[1120px] mx-auto px-5 grid md:grid-cols-[1.1fr_1fr] gap-10 md:gap-6 items-center">
           <div className="text-center md:text-left">
             <span className="mq-a0 inline-flex items-center gap-2 rounded-full bg-white border border-[var(--line)] px-3 py-1.5 text-xs font-bold text-[var(--muted)] mb-6">
               <span className="w-2 h-2 rounded-full bg-[var(--accent)]" />
-              {t("hero.badge", { month: monthLabel, monthLower: monthLabel.toLowerCase() })}
+              {t("hero.badge")}
             </span>
             <h1
               className="mq-a1 font-extrabold tracking-[-0.04em] leading-[1.02] mb-5"
@@ -223,7 +267,7 @@ export default function SMSQuiz() {
             >
               {t("hero.title1")}
               <br />
-              <span className="text-[var(--accent)]">{t("hero.title2")}</span>
+              <span className="text-[var(--accent-text)]">{t("hero.title2")}</span>
             </h1>
             <p
               className="mq-a2 text-[var(--muted)] max-w-[480px] mx-auto md:mx-0 mb-8 leading-relaxed"
@@ -280,10 +324,10 @@ export default function SMSQuiz() {
               <article
                 key={place}
                 className={`group rounded-3xl p-7 md:p-8 text-center border transition-shadow duration-300 hover:shadow-[0_16px_48px_rgba(11,31,42,0.08)] ${
-                  place === 1 ? "bg-[var(--accent-soft)] border-[rgba(29,78,216,0.2)] md:-translate-y-3" : "bg-[var(--surface)] border-transparent"
+                  place === 1 ? "bg-[var(--accent-soft)] border-[color-mix(in_srgb,var(--accent)_20%,transparent)] md:-translate-y-3" : "bg-[var(--surface)] border-transparent"
                 }`}
               >
-                <p className={`inline-block text-xs font-bold tracking-[0.1em] uppercase rounded-full px-3 py-1 mb-6 ${place === 1 ? "bg-[var(--accent)] text-white" : "bg-white text-[var(--muted)]"}`}>
+                <p className={`inline-block text-xs font-bold tracking-[0.1em] uppercase rounded-full px-3 py-1 mb-6 ${place === 1 ? "bg-[var(--accent)] text-[var(--on-accent)]" : "bg-white text-[var(--muted)]"}`}>
                   {t("place", { place })}
                 </p>
                 <div className="h-[200px] flex items-end justify-center mb-6">
@@ -305,7 +349,7 @@ export default function SMSQuiz() {
             {HOW_STEPS.map(({ Icon, key }, i) => (
               <li key={key} className="relative bg-white rounded-2xl p-6 border border-[var(--line)]">
                 <div className="flex items-center justify-between mb-5">
-                  <span className="w-11 h-11 rounded-xl bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center">
+                  <span className="w-11 h-11 rounded-xl bg-[var(--accent-soft)] text-[var(--accent-text)] flex items-center justify-center">
                     <Icon size={22} strokeWidth={2} />
                   </span>
                   <span className="text-4xl font-extrabold text-[rgba(11,31,42,0.1)] leading-none">{i + 1}</span>
@@ -385,8 +429,9 @@ export default function SMSQuiz() {
               title={t("winners.title")}
               className="text-center md:text-left"
             />
+            {WINNERS.length > 0 && (
             <label className="relative self-center md:self-auto">
-              <span className="sr-only">{t("winners.month")}</span>
+              <span className="sr-only">{t("winners.period")}</span>
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
@@ -399,7 +444,20 @@ export default function SMSQuiz() {
               </select>
               <ChevronRight size={16} className="absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-[var(--muted)] pointer-events-none" />
             </label>
+            )}
           </div>
+
+          {WINNERS.length === 0 ? (
+            <div className="max-w-[560px] mx-auto rounded-3xl bg-white border border-[var(--line)] p-8 md:p-10 text-center">
+              <span className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-[var(--accent-soft)] text-[var(--accent-text)] flex items-center justify-center">
+                <Trophy size={28} />
+              </span>
+              <h3 className="text-xl font-extrabold mb-2">{t("winners.empty.title")}</h3>
+              <p className="text-[var(--muted)] leading-relaxed mb-6">{t("winners.empty.text")}</p>
+              <PrimaryButton href={SUBSCRIBE_TEL}>{t("hero.cta")}</PrimaryButton>
+            </div>
+          ) : (
+          <>
           <p className="text-sm text-[var(--muted)] -mt-6 mb-8 text-center md:text-left">
             {t("winners.privacy")}
           </p>
@@ -441,6 +499,8 @@ export default function SMSQuiz() {
               </button>
             </div>
           </div>
+          </>
+          )}
         </div>
       </section>
 
@@ -458,7 +518,7 @@ export default function SMSQuiz() {
             {TARIFFS.map((tariff) => (
               <div
                 key={tariff.key}
-                className={`rounded-3xl p-7 md:p-8 ${tariff.featured ? "bg-white/[0.06] border border-[rgba(107,155,255,0.4)]" : "bg-white text-[var(--ink)]"}`}
+                className={`rounded-3xl p-7 md:p-8 ${tariff.featured ? "bg-white/[0.06] border border-[color-mix(in_srgb,var(--accent-on-dark)_40%,transparent)]" : "bg-white text-[var(--ink)]"}`}
               >
                 <p className={`text-xs font-bold tracking-[0.1em] uppercase mb-4 ${tariff.featured ? "text-[var(--accent-on-dark)]" : "text-[var(--muted)]"}`}>
                   {t(`tariffs.${tariff.key}.tag`)}
@@ -468,7 +528,7 @@ export default function SMSQuiz() {
                 <ul className="list-none m-0 p-0 flex flex-col gap-3">
                   {t(`tariffs.${tariff.key}.items`, { returnObjects: true }).map((item) => (
                     <li key={item} className={`flex gap-2.5 text-sm ${tariff.featured ? "text-white/85" : "text-[var(--ink)]"}`}>
-                      <Check size={18} className={`shrink-0 ${tariff.featured ? "text-[var(--accent-on-dark)]" : "text-[var(--accent)]"}`} />
+                      <Check size={18} className={`shrink-0 ${tariff.featured ? "text-[var(--accent-on-dark)]" : "text-[var(--accent-text)]"}`} />
                       {item}
                     </li>
                   ))}
@@ -487,7 +547,7 @@ export default function SMSQuiz() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-[960px] mx-auto">
             {RULES.map(({ Icon, key }) => (
               <div key={key} className="flex gap-4">
-                <span className="w-10 h-10 shrink-0 rounded-xl bg-[var(--surface)] text-[var(--accent)] flex items-center justify-center">
+                <span className="w-10 h-10 shrink-0 rounded-xl bg-[var(--surface)] text-[var(--accent-text)] flex items-center justify-center">
                   <Icon size={20} />
                 </span>
                 <div>
@@ -500,15 +560,16 @@ export default function SMSQuiz() {
 
           {regulationsList.length > 0 && (
             <div id="regulations" className="mt-14 pt-10 border-t border-[var(--line)] text-center">
-              <h3 className="text-lg font-extrabold mb-5">{t("rules.regulations")}</h3>
+              <h3 className="text-lg font-extrabold mb-5">{operator.name ? t("rules.regulation", { operator: operator.name }) : t("rules.regulations")}</h3>
               <div className="flex flex-wrap gap-3 justify-center">
                 {regulationsList.map((reg) => (
                   <a
                     key={reg.url}
                     href={reg.url}
+                    style={OPERATOR_BY_REGULATION[reg.operatorId] ? themeVars(OPERATORS[OPERATOR_BY_REGULATION[reg.operatorId]].theme) : undefined}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`inline-flex items-center justify-center gap-2 w-44 rounded-full text-white text-sm font-bold no-underline px-5 py-3 transition-all hover:-translate-y-0.5 hover:shadow-lg ${reg.className}`}
+                    className={`inline-flex items-center justify-center gap-2 w-44 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] text-sm font-bold no-underline px-5 py-3 transition-all hover:-translate-y-0.5 hover:shadow-lg`}
                   >
                     <FileText size={18} className="shrink-0" />
                     <span className="truncate max-w-[180px]">{reg.label}</span>
@@ -534,7 +595,7 @@ export default function SMSQuiz() {
                 <MapPin size={18} className="text-[var(--accent-on-dark)] shrink-0" /> {t("contact.address")}
               </li>
               <li>
-                <a href="+992115553033" className="flex items-center gap-3 text-white/85 hover:text-white no-underline">
+                <a href="tel:+992115553033" className="flex items-center gap-3 text-white/85 hover:text-white no-underline">
                   <Phone size={18} className="text-[var(--accent-on-dark)] shrink-0" /> 3033
                 </a>
               </li>
@@ -576,7 +637,7 @@ export default function SMSQuiz() {
                 <button
                   type="submit"
                   disabled={status === "loading"}
-                  className="mt-1 w-full inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent-on-dark)] hover:bg-[#93b6ff] disabled:opacity-60 text-[var(--deep)] font-extrabold py-3.5 px-6 text-base border-none cursor-pointer transition-colors"
+                  className="mt-1 w-full inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent-on-dark)] hover:brightness-110 disabled:opacity-60 text-[var(--deep)] font-extrabold py-3.5 px-6 text-base border-none cursor-pointer transition-colors"
                   style={{ fontFamily: "inherit" }}
                 >
                   {status === "loading" ? (

@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* Цвета по умолчанию (страница выбора оператора).
+   На странице оператора accent-переменные переопределяются из src/config/operators.js */
+:root {
+  --ink: #0b1430;
+  --muted: #4f626c;
+  --surface: #f5f7fa;
+  --line: rgba(11, 31, 42, 0.1);
+  --accent: #1d4ed8;
+  --accent-hover: #1e3fae;
+  --accent-text: #1d4ed8;
+  --on-accent: #ffffff;
+  --accent-soft: #e6ecfd;
+  --accent-on-dark: #6b9bff;
+  --deep: #0a1433;
+  --screen: #1e3a8a;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 7rem; /* фиксированная шапка: навигация + кнопки операторов */
+}
+
+body {
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--font-onest), system-ui, sans-serif;
+}
+
+@keyframes mq-up   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes mq-pop  { from { opacity: 0; transform: scale(0.97); }     to { opacity: 1; transform: none; } }
+@keyframes mq-down { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+.mq-a0   { animation: mq-up 0.6s ease both; }
+.mq-a1   { animation: mq-up 0.6s 0.1s ease both; }
+.mq-a2   { animation: mq-up 0.6s 0.2s ease both; }
+.mq-a3   { animation: mq-up 0.6s 0.3s ease both; }
+.mq-pop  { animation: mq-pop 0.25s ease both; }
+.mq-down { animation: mq-down 0.2s ease both; }
+.mq-bar  { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
