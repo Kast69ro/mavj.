@@ -161,8 +161,7 @@
         "desc": "Send STOP to 3033 to unsubscribe at any time."
       }
     },
-    "regulation": "Rules for {{operator}} subscribers",
-    "regulations": "Rules by operator"
+    "regulation": "Rules for {{operator}} subscribers"
   },
   "contact": {
     "eyebrow": "Contact",

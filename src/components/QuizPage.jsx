@@ -56,19 +56,17 @@ import {
   LanguageSwitcher,
   OperatorBar,
 } from "./ui";
-import { OPERATORS, OPERATOR_SLUGS, themeVars } from "@/config/operators";
+import { themeVars } from "@/config/operators";
 import { sitePath } from "@/i18n/config";
 import logo from "@/assets/logo.png";
 
-/** id регламента ("tc") → оператор ("tcell") */
-const OPERATOR_BY_REGULATION = Object.fromEntries(OPERATOR_SLUGS.map((slug) => [OPERATORS[slug].regulation, slug]));
-
 const RULES_API = "https://mavj.tj/api/admin/rules";
 
-/** Регламенты с API (грузятся в браузере, чтобы ссылки всегда были свежими) */
-function useRegulations() {
+/** Регламенты с API (грузятся в браузере, чтобы ссылки всегда были свежими). enabled = false — не грузить */
+function useRegulations(enabled) {
   const [data, setData] = useState([]);
   useEffect(() => {
+    if (!enabled) return;
     const controller = new AbortController();
     fetch(RULES_API, { headers: { accept: "application/json" }, signal: controller.signal })
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
@@ -80,7 +78,7 @@ function useRegulations() {
         if (err.name !== "AbortError") console.error("Rules API error:", err);
       });
     return () => controller.abort();
-  }, []);
+  }, [enabled]);
   return data;
 }
 
@@ -104,7 +102,8 @@ export default function QuizPage({ operator, builtAt }) {
   const [today, setToday] = useState(() => new Date(builtAt));
   const [selectedMonth, setSelectedMonth] = useState(MONTHS[today.getMonth()]);
 
-  const data = useRegulations();
+  /* Регламенты — только на сайте оператора, на основном сайте их нет */
+  const data = useRegulations(Boolean(operator.slug));
 
   /* HTML собран заранее — в браузере подставляем настоящую текущую дату */
   useEffect(() => {
@@ -161,9 +160,8 @@ export default function QuizPage({ operator, builtAt }) {
 
   const fieldError = (name) => (errors[name] ? t(`contact.errors.${name}`) : "");
 
-  /* Основной сайт — регламенты всех операторов, сайт оператора — только его */
   const regulationsList = mapRegulations(data, t("rules.regulationFallback")).filter(
-    (reg) => !operator.slug || reg.operatorId === operator.regulation,
+    (reg) => reg.operatorId === operator.regulation,
   );
 
   const scrollTo = (href) => {
@@ -560,13 +558,12 @@ export default function QuizPage({ operator, builtAt }) {
 
           {regulationsList.length > 0 && (
             <div id="regulations" className="mt-14 pt-10 border-t border-[var(--line)] text-center">
-              <h3 className="text-lg font-extrabold mb-5">{operator.name ? t("rules.regulation", { operator: operator.name }) : t("rules.regulations")}</h3>
+              <h3 className="text-lg font-extrabold mb-5">{t("rules.regulation", { operator: operator.name })}</h3>
               <div className="flex flex-wrap gap-3 justify-center">
                 {regulationsList.map((reg) => (
                   <a
                     key={reg.url}
                     href={reg.url}
-                    style={OPERATOR_BY_REGULATION[reg.operatorId] ? themeVars(OPERATORS[OPERATOR_BY_REGULATION[reg.operatorId]].theme) : undefined}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`inline-flex items-center justify-center gap-2 w-44 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--on-accent)] text-sm font-bold no-underline px-5 py-3 transition-all hover:-translate-y-0.5 hover:shadow-lg`}
